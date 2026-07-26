@@ -18,3 +18,12 @@
 #     artifact-name: corne_left_with_studio
 #
 ---
+include:
+  - board: seeeduino_xiao_ble
+    shield: bgg2_dongle
+  - board: seeeduino_xiao_ble
+    shield: settings_reset
+  - board: seeeduino_xiao_ble
+    shield: bgg2_left
+  - board: seeeduino_xiao_ble
+    shield: bgg2_right

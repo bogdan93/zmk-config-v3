@@ -1,0 +1,12 @@
+file_format: "1"
+id: bgg2
+name: bgg2
+type: shield
+url: https://github.com/bogdan93/zmk-config-v3
+requires: [seeed_xiao]
+exposes: [i2c_oled]
+features:
+  - keys
+siblings:
+  - bgg2_left
+  - bgg2_right

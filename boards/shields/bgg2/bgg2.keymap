@@ -1,0 +1,118 @@
+/*
+ * Copyright (c) 2024 The ZMK Contributors
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
+#include <behaviors.dtsi>
+#include <dt-bindings/zmk/bt.h>
+#include <dt-bindings/zmk/keys.h>
+
+#define HM_TAPPING_TERM 300
+#define HM_TAPPING_TERM_FAST 200
+#define HM_PRIOR_IDLE 150
+
+// Key positions for 36-key layout
+//  0  1  2  3  4     5  6  7  8  9
+// 10 11 12 13 14    15 16 17 18 19
+// 20 21 22 23 24    25 26 27 28 29
+//          30 31 32 33 34 35
+#define KEYS_L 0 1 2 3 4 10 11 12 13 14 20 21 22 23 24
+#define KEYS_R 5 6 7 8 9 15 16 17 18 19 25 26 27 28 29
+#define KEYS_T 30 31 32 33 34 35
+
+#define LAYER_BASE 0
+#define LAYER_SYMBOLS 1
+#define LAYER_NUMBERS 2
+#define LAYER_FN 3
+
+#define NO_KEY &trans
+
+#define B_KEY(keycode) &kp keycode
+
+/ {
+    behaviors {
+        // Positional Homerow mods
+        // Homerow mods that prevent accidental activations when rolling keys,
+        // such as when typing `st` or `ne` on colemak-dh layouts or `as` on
+        // qwerty.
+        //
+        // Works by only allowing a mod to activate within tapping-term if
+        // it's on the opposite side of the keyboard or on the same side thumb
+        // keys.
+
+        // Further optimization using urob's timerless homerow mods method:
+        // https://github.com/urob/zmk-config#timeless-homerow-mods
+        hm_l: homerow_mods_left {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            bindings = <&kp>,  <&kp>;
+
+            flavor = "balanced";
+            tapping-term-ms = <HM_TAPPING_TERM>;
+            quick-tap-ms = <175>;                // repeat on tap-into-hold
+            require-prior-idle-ms = <HM_PRIOR_IDLE>;
+
+            hold-trigger-key-positions = <KEYS_R KEYS_T>;
+            hold-trigger-on-release;
+        };
+
+        hm_r: homerow_mods_right {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            bindings = <&kp>, <&kp>;
+
+            flavor = "balanced";
+            tapping-term-ms = <HM_TAPPING_TERM>;
+            quick-tap-ms = <175>;
+            require-prior-idle-ms = <HM_PRIOR_IDLE>;
+
+            hold-trigger-key-positions = <KEYS_L KEYS_T>;
+            hold-trigger-on-release;
+        };
+
+    };
+
+    keymap {
+        compatible = "zmk,keymap";
+        default_layer {
+            label = "default";
+            bindings = <
+              B_KEY(SEMICOLON)    B_KEY(COMMA)   B_KEY(DOT)    B_KEY(P)                    B_KEY(Y)                      B_KEY(F)              B_KEY(G)       B_KEY(C)                 B_KEY(R)       B_KEY(L)
+              B_KEY(A)            &hm_l LALT O   B_KEY(E)      &hm_l LCTRL U               B_KEY(I)                      B_KEY(D)              &hm_r RCTRL H  B_KEY(T)                 &hm_r RALT N   B_KEY(S)
+              B_KEY(SINGLE_QUOTE) B_KEY(Q)       B_KEY(J)      B_KEY(K)                    &lt LAYER_FN X                B_KEY(B)              B_KEY(M)       B_KEY(W)                 B_KEY(V)       B_KEY(Z)
+                                                 B_KEY(BSPC)   &lt LAYER_NUMBERS SPC       &lt LAYER_SYMBOLS RET         B_KEY(ESC)            B_KEY(RSHIFT)  &mo LAYER_SYMBOLS
+            >;
+        };
+
+        symbols_layer {
+            label = "symbols";
+            bindings = <
+              B_KEY(COLON)         B_KEY(LBRC)    B_KEY(RBRC)     B_KEY(STAR)      B_KEY(EXCLAMATION)     NO_KEY        B_KEY(AMPS)         B_KEY(PIPE)         B_KEY(PERCENT)       B_KEY(TILDE)
+              B_KEY(MINUS)         B_KEY(LPAR)    B_KEY(RPAR)     B_KEY(EQUAL)     B_KEY(UNDERSCORE)      NO_KEY        B_KEY(DOLLAR)       B_KEY(AT_SIGN)      B_KEY(SLASH)         B_KEY(BACKSLASH)
+              B_KEY(DOUBLE_QUOTES) B_KEY(LBKT)    B_KEY(RBKT)     B_KEY(PLUS)      B_KEY(GRAVE)           B_KEY(HASH)   B_KEY(LT)           B_KEY(GT)           B_KEY(CARET)         B_KEY(QMARK)
+                                                  NO_KEY          NO_KEY           NO_KEY                 NO_KEY        NO_KEY              NO_KEY
+            >;
+        };
+
+        number_layer {
+            label = "numbers";
+            bindings = <
+              &bt BT_CLR_ALL    NO_KEY         B_KEY(UP_ARROW)     NO_KEY           NO_KEY                                NO_KEY        B_KEY(N1)     B_KEY(N2)   B_KEY(N3)  NO_KEY
+              NO_KEY            B_KEY(LEFT)    B_KEY(DOWN)         B_KEY(RIGHT)     B_KEY(DEL)                            NO_KEY        B_KEY(N4)     B_KEY(N5)   B_KEY(N6)  NO_KEY
+              NO_KEY            B_KEY(K_MUTE)  B_KEY(K_VOL_DN)     B_KEY(K_VOL_UP)  B_KEY(TAB)                            NO_KEY        B_KEY(N7)     B_KEY(N8)   B_KEY(N9)  NO_KEY
+                                               NO_KEY              NO_KEY           NO_KEY                                NO_KEY        B_KEY(N0)     NO_KEY
+            >;
+        };
+
+        fn_layer {
+            label = "fn";
+            bindings = <
+              NO_KEY    NO_KEY   NO_KEY     NO_KEY     NO_KEY                                NO_KEY   B_KEY(F1)     B_KEY(F2)   B_KEY(F3)  B_KEY(F12)
+              NO_KEY    NO_KEY   NO_KEY     NO_KEY     NO_KEY                                NO_KEY   B_KEY(F4)     B_KEY(F5)   B_KEY(F6)  B_KEY(F11)
+              NO_KEY    NO_KEY   NO_KEY     NO_KEY     NO_KEY                                NO_KEY   B_KEY(F7)     B_KEY(F8)   B_KEY(F9)  B_KEY(F10)
+                                 NO_KEY     NO_KEY     NO_KEY                                NO_KEY   NO_KEY        NO_KEY
+            >;
+        };
+	};
+};
