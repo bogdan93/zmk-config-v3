@@ -19,11 +19,11 @@
 #
 ---
 include:
-  - board: xiao_ble
+  - board: seeeduino_xiao_ble 
     shield: bgg2_dongle
-  - board: xiao_ble
+  - board: seeeduino_xiao_ble 
     shield: settings_reset
-  - board: xiao_ble
+  - board: seeeduino_xiao_ble 
     shield: bgg2_left
-  - board: xiao_ble
+  - board: seeeduino_xiao_ble 
     shield: bgg2_right
